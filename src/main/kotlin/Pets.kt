@@ -1,7 +1,20 @@
 abstract class Pet(var name: String)
-class Cat(name: String) : Pet(name)
+open class Cat(name: String) : Pet(name) // needs to be if you want to subclass it
+class AegeanCat(name: String): Cat(name)
 class Dog(name: String): Pet(name)
 class Fish(name: String): Pet(name)
+
+interface Retailer<out T> {
+    fun sell(): T
+}
+
+class CatRetailer : Retailer<Cat> {
+    override fun sell(): AegeanCat {
+        println("sell a cat")
+        return AegeanCat ("") // create a new cat object
+    }
+}
+
 class Contest<T: Pet> {
     val scores: MutableMap<T, Int> = mutableMapOf()
     fun addScore(t: T, score: Int = 0) {
@@ -35,4 +48,8 @@ fun main(args: Array<String>) {
     petContest.addScore(fishFinny, 55)
     val topPet = petContest.getWinners().first()
     println("Pet contest winner is ${topPet.name}")
+
+    val catRetailer: Retailer<Cat> = CatRetailer()
+    val petRetailer: Retailer<Pet> = CatRetailer()
+    petRetailer.sell()
 }
