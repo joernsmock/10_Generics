@@ -1,17 +1,46 @@
-abstract class Pet(var name: String)
-open class Cat(name: String) : Pet(name) // needs to be if you want to subclass it
-class AegeanCat(name: String): Cat(name)
-class Dog(name: String): Pet(name)
-class Fish(name: String): Pet(name)
+abstract class Pet(var name: String) {
+    abstract fun noise()
+}
+
+// needs to be open if you want to subclass it
+open class Cat(name: String) : Pet(name) {
+    override fun noise() {
+        println("meow!")
+    }
+}
+
+open class AegeanCat(name: String): Cat(name) {
+    override fun noise() {
+        println("meow!")
+    }
+}
+
+class DeadAegeanCat(name: String): AegeanCat(name) {
+    override fun noise() {
+        println("+")
+    }
+}
+
+class Dog(name: String): Pet(name) {
+    override fun noise() {
+        println("wuff!")
+    }
+}
+
+class Fish(name: String): Pet(name) {
+    override fun noise() {
+        println("crck!")
+    }
+}
 
 interface Retailer<out T> {
     fun sell(): T
 }
 
 class CatRetailer : Retailer<Cat> {
-    override fun sell(): AegeanCat {
-        println("sell a cat")
-        return AegeanCat ("") // create a new cat object
+    override fun sell(): Cat {
+        println("CatRetailer sells you a cat.")
+        return Cat ("") // create and return a cat object
     }
 }
 
@@ -23,7 +52,9 @@ class Contest<T: Pet> {
     fun getWinners(): MutableSet<T> {
         val winners: MutableSet<T> = mutableSetOf()
 
-        val highScore = scores.values.maxOrNull() // 'max()' is deprecated (shown by stroked font in IDEA)
+        val highScore = scores.values.max() // max() is nullable (changed?)
+        // (shown by
+        // stroked font in IDEA)
         // automatic formatting (live) and reformat-All is just plain fun
         for ((t, score) in scores) {
             if (score == highScore) winners.add(t)
@@ -32,10 +63,17 @@ class Contest<T: Pet> {
     }
 }
 
+tailrec fun fact(n: Int, acc: Int = 1): Int {
+    if (n == 1) return acc
+    return fact(n - 1, acc * n)
+}
+
 fun main(args: Array<String>) {
+    val f = fact(5,1)
+    println("f = "+f)
     val catFuzz = Cat("Fuzz Lightyear")
     val catKatsu = Cat("Katsu")
-    val fishFinny = Fish("Finny McGraw")
+    val fishFinny = Fish("Fish Finny")
 
     val catContest = Contest<Cat> ()
     catContest.addScore(catFuzz, 50)
@@ -51,5 +89,10 @@ fun main(args: Array<String>) {
 
     val catRetailer: Retailer<Cat> = CatRetailer()
     val petRetailer: Retailer<Pet> = CatRetailer()
+
+    // sell returns an object that may just vanish?
     petRetailer.sell()
+    // ...I can put the return value into a variable:
+    val newPet = petRetailer.sell()
+    newPet.noise()
 }
